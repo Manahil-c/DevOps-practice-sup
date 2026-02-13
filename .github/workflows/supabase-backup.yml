@@ -19,7 +19,7 @@ jobs:
 
       - name: Backup Supabase database
         env:
-          # These environment variables are automatically picked up by pg_dump
+          # Use individual variables so the shell doesn't break on spaces
           PGPASSWORD: ${{ secrets.MSECRET }}
           PGHOST: aws-1-ap-southeast-1.pooler.supabase.com
           PGPORT: 6543
@@ -27,13 +27,13 @@ jobs:
           PGDATABASE: postgres
           PGSSLMODE: require
         run: |
-          # The command is now clean and doesn't contain the password in the string
+          # pg_dump automatically detects the PG variables above
           pg_dump --format=custom --no-owner --no-privileges -f supabase_backup.dump
 
       - name: Verify and Log Size
         run: |
           ls -lh supabase_backup.dump
-          echo "Backup completed successfully."
+          echo "Backup created successfully."
 
       - name: Upload backup
         uses: actions/upload-artifact@v4
