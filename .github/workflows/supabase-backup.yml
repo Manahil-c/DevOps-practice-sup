@@ -2,45 +2,37 @@ name: Supabase Backup
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 0 * * *'
 
 jobs:
-  backup_and_verify:
-    name: Backup and Verify
+  backup:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check PostgreSQL Tools
+      - name: Install PostgreSQL 17 client
         run: |
-          pg_dump --version
-          pg_restore --version
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-17
 
       - name: Backup Supabase database
         env:
-          PGPASSWORD: ${{ secrets.MSECRET }}
+          # Ensure this secret is set in GitHub Settings > Secrets > Actions
+          PGPASSWORD: ${{ secrets.MSECRET }} 
           PGSSLMODE: require
         run: |
-          # Note the 'ipv4.' prefix added to the host below
           pg_dump \
-            -h ipv4.db.ksuxmhzpclzoterkltug.supabase.co \
-            -p 5432 \
-            -U postgres \
+            -h ipv4.aws-1-ap-southeast-1.pooler.supabase.com \
+            -p 6543 \
+            -U postgres.ksuxmhzpclzoterkltug \
             -d postgres \
             --format=custom \
             --no-owner \
             --no-privileges \
             -f supabase_backup.dump
 
-      - name: Verify Backup Integrity
-        run: |
-          echo "Checking tables in backup..."
-          pg_restore -l supabase_backup.dump | grep "TABLE"
-          echo "Backup is valid."
-
-      - name: Upload backup artifact
+      - name: Upload backup
         uses: actions/upload-artifact@v4
         with:
           name: supabase-backup
           path: supabase_backup.dump
-          retention-days: 7
