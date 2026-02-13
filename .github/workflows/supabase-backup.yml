@@ -21,8 +21,9 @@ jobs:
           PGPASSWORD: ${{ secrets.MSECRET }}
           PGSSLMODE: require
         run: |
+          # Note the 'ipv4.' prefix added to the host below
           pg_dump \
-            -h db.ksuxmhzpclzoterkltug.supabase.co \
+            -h ipv4.db.ksuxmhzpclzoterkltug.supabase.co \
             -p 5432 \
             -U postgres \
             -d postgres \
@@ -34,7 +35,6 @@ jobs:
       - name: Verify Backup Integrity
         run: |
           echo "Checking tables in backup..."
-          # If the backup is empty, grep will return 1 and fail the job
           pg_restore -l supabase_backup.dump | grep "TABLE"
           echo "Backup is valid."
 
