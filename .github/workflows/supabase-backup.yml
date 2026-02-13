@@ -7,7 +7,7 @@ on:
 
 jobs:
   backup:
-    runs-on: ubuntu-latest
+    runs-runs-on: ubuntu-latest
 
     steps:
       - name: Install PostgreSQL 17 client
@@ -26,13 +26,11 @@ jobs:
           PGDATABASE: postgres
           PGSSLMODE: require
         run: |
-          # Use individual variables to avoid shell parsing errors
           pg_dump --format=custom --no-owner --no-privileges -f supabase_backup.dump
 
       - name: Verify and Log Size
         run: |
           ls -lh supabase_backup.dump
-          echo "Backup file generated."
 
       - name: Upload backup
         uses: actions/upload-artifact@v4
