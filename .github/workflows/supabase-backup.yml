@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check PostgreSQL client version
+      - name: Check PostgreSQL Tools
         run: |
           pg_dump --version
           pg_restore --version
@@ -21,7 +21,6 @@ jobs:
           PGPASSWORD: ${{ secrets.MSECRET }}
           PGSSLMODE: require
         run: |
-          # Use the built-in pg_dump
           pg_dump \
             -h db.ksuxmhzpclzoterkltug.supabase.co \
             -p 5432 \
@@ -34,10 +33,10 @@ jobs:
 
       - name: Verify Backup Integrity
         run: |
-          echo "Verifying backup file integrity..."
-          # If the file is bad, this command will fail the job automatically
+          echo "Checking tables in backup..."
+          # This lists the tables; if the file is empty or corrupt, this fails.
           pg_restore -l supabase_backup.dump | grep "TABLE"
-          echo "Backup file is valid and contains data."
+          echo "Backup is valid."
 
       - name: Upload backup artifact
         uses: actions/upload-artifact@v4
