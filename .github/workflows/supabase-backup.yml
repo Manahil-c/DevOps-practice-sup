@@ -1,7 +1,10 @@
 name: Supabase Backup
 
+# Trigger manually or on a daily schedule
 on:
-  workflow_dispatch:
+  workflow_dispatch: # manual run
+  schedule:
+    - cron: '0 0 * * *' # runs daily at midnight UTC
 
 jobs:
   backup:
@@ -17,7 +20,7 @@ jobs:
 
       - name: Backup Supabase database
         env:
-          PGPASSWORD: ${{ secrets.MSECRET }}
+          PGPASSWORD: ${{ secrets.MSECRET }}  # make sure this secret is set
           PGSSLMODE: require
         run: |
           pg_dump \
@@ -30,7 +33,7 @@ jobs:
             --no-privileges \
             -f supabase_backup.dump
 
-      - name: Upload backup
+      - name: Upload backup artifact
         uses: actions/upload-artifact@v4
         with:
           name: supabase-backup
