@@ -1,15 +1,14 @@
 name: Supabase Backup
 
 on:
-  workflow_dispatch: # Manual run
+  workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *' # Daily at midnight UTC
+    - cron: '0 0 * * *'
 
 jobs:
   backup:
     name: Create Database Backup
     runs-on: ubuntu-latest
-
     steps:
       - name: Install PostgreSQL 17 client
         run: |
@@ -49,8 +48,11 @@ jobs:
     needs: backup
     runs-on: ubuntu-latest
     steps:
+      # We must re-add the repo here because this is a fresh runner!
       - name: Install PostgreSQL 17 client
         run: |
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
           sudo apt-get update
           sudo apt-get install -y postgresql-client-17
 
@@ -61,6 +63,7 @@ jobs:
 
       - name: Run Integrity Check
         run: |
-          echo "Listing tables inside the backup file to verify contents..."
-          pg_restore -l supabase_backup.dump | grep "TABLE"
-          echo "Check complete. Backup is readable and contains data."
+          echo "Listing contents inside the backup file..."
+          # This lists the internal objects. If it's a valid dump, it will show tables.
+          pg_restore -l supabase_backup.dump | grep -i "TABLE" || (echo "No tables found or file corrupt" && exit 1)
+          echo "Check complete. Backup is valid."
