@@ -20,11 +20,13 @@ jobs:
           PGPASSWORD: ${{ secrets.MSECRET }}
           PGHOST: aws-1-ap-southeast-1.pooler.supabase.com
           PGPORT: 6543
+          # We use the full string here to ensure the pooler routes correctly
           PGUSER: postgres.ksuxmhzpclzoterkltug
           PGDATABASE: postgres
           PGSSLMODE: require
         run: |
-          pg_dump -f supabase_backup.dump --format=custom --no-owner --no-privileges
+          # The --no-password flag tells pg_dump to look ONLY at the PGPASSWORD env variable
+          pg_dump -f supabase_backup.dump --format=custom --no-owner --no-privileges --no-password
 
       - name: Upload backup
         uses: actions/upload-artifact@v4
