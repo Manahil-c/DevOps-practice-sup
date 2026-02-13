@@ -2,8 +2,6 @@ name: Supabase Backup
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 0 * * *'
 
 jobs:
   backup:
@@ -26,14 +24,7 @@ jobs:
           PGDATABASE: postgres
           PGSSLMODE: require
         run: |
-          echo "Starting backup..."
-          pg_dump $PGDATABASE --format=custom --no-owner --no-privileges -f supabase_backup.dump
-          echo "Backup completed."
-
-      - name: Verify and Log Size
-        run: |
-          echo "Backup file info:"
-          ls -lh supabase_backup.dump
+          pg_dump -f supabase_backup.dump --format=custom --no-owner --no-privileges
 
       - name: Upload backup
         uses: actions/upload-artifact@v4
