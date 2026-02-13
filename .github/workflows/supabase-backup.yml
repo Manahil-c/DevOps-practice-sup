@@ -6,7 +6,7 @@ on:
     - cron: '0 0 * * *' # Daily at midnight UTC
 
 jobs:
-  backup:
+  backup:s
     name: Create Database Backup
     runs-on: ubuntu-latest
 
