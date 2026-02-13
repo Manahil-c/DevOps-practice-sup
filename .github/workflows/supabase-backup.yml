@@ -3,7 +3,7 @@ name: Supabase Backup
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *' # This will now run automatically every night at midnight
+    - cron: '0 0 * * *'
 
 jobs:
   backup:
@@ -19,7 +19,6 @@ jobs:
 
       - name: Backup Supabase database
         env:
-          # Use your secret name here (ensure it is set in GitHub Settings)
           PGPASSWORD: ${{ secrets.MSECRET }} 
           PGSSLMODE: require
         run: |
@@ -38,4 +37,4 @@ jobs:
         with:
           name: supabase-backup
           path: supabase_backup.dump
-          retention-days: 30 # Keeps your backups for 30 days
+          retention-days: 30
