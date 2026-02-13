@@ -19,7 +19,7 @@ jobs:
 
       - name: Backup Supabase database
         env:
-          # Setting these variables tells pg_dump exactly where to go
+          # These environment variables are automatically picked up by pg_dump
           PGPASSWORD: ${{ secrets.MSECRET }}
           PGHOST: aws-1-ap-southeast-1.pooler.supabase.com
           PGPORT: 6543
@@ -27,7 +27,7 @@ jobs:
           PGDATABASE: postgres
           PGSSLMODE: require
         run: |
-          # By using env variables, we don't need a long URI that can break
+          # The command is now clean and doesn't contain the password in the string
           pg_dump --format=custom --no-owner --no-privileges -f supabase_backup.dump
 
       - name: Verify and Log Size
