@@ -34,7 +34,7 @@ jobs:
       - name: Verify Backup Integrity
         run: |
           echo "Checking tables in backup..."
-          # This lists the tables; if the file is empty or corrupt, this fails.
+          # If the backup is empty, grep will return 1 and fail the job
           pg_restore -l supabase_backup.dump | grep "TABLE"
           echo "Backup is valid."
 
