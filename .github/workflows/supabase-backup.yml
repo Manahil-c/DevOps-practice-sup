@@ -23,7 +23,6 @@ jobs:
           PGPASSWORD: ${{ secrets.MSECRET }}
           PGSSLMODE: require
         run: |
-          # Added a loop to retry up to 3 times in case of network hiccups
           for i in {1..3}; do
             pg_dump \
               -h db.ksuxmhzpclzoterkltug.supabase.co \
@@ -43,11 +42,11 @@ jobs:
         with:
           name: supabase-backup
           path: supabase_backup.dump
-          retention-days: 7 # Optional: keeps artifacts for 7 days to save storage
+          retention-days: 7
 
   test_backup:
     name: Verify Backup Integrity
-    needs: backup # Ensures this runs ONLY after the backup job finishes
+    needs: backup
     runs-on: ubuntu-latest
     steps:
       - name: Install PostgreSQL 17 client
@@ -63,8 +62,5 @@ jobs:
       - name: Run Integrity Check
         run: |
           echo "Listing tables inside the backup file to verify contents..."
-          # pg_restore -l lists the table of contents of the archive
-          # If the file is corrupt, this command will fail and stop the action
           pg_restore -l supabase_backup.dump | grep "TABLE"
-          
           echo "Check complete. Backup is readable and contains data."
