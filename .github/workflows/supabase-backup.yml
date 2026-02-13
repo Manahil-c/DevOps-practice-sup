@@ -20,6 +20,8 @@ jobs:
           PGPASSWORD: ${{ secrets.MSECRET }} 
           PGSSLMODE: require
         run: |
+          
+        # We use the standard Pooler host without any prefixes
           pg_dump \
             -h aws-1-ap-southeast-1.pooler.supabase.com \
             -p 6543 \
