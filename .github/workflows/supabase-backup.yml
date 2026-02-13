@@ -21,7 +21,7 @@ jobs:
           PGSSLMODE: require
         run: |
           pg_dump \
-            -h ipv4.aws-1-ap-southeast-1.pooler.supabase.com \
+            -h aws-1-ap-southeast-1.pooler.supabase.com \
             -p 6543 \
             -U postgres.ksuxmhzpclzoterkltug \
             -d postgres \
