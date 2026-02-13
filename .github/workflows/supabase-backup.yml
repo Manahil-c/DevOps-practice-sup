@@ -19,13 +19,16 @@ jobs:
 
       - name: Backup Supabase database
         env:
+          # Setting these variables tells pg_dump exactly where to go
           PGPASSWORD: ${{ secrets.MSECRET }}
+          PGHOST: aws-1-ap-southeast-1.pooler.supabase.com
+          PGPORT: 6543
+          PGUSER: postgres.ksuxmhzpclzoterkltug
+          PGDATABASE: postgres
+          PGSSLMODE: require
         run: |
-          pg_dump "postgresql://postgres.ksuxmhzpclzoterkltug:${PGPASSWORD}@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require" \
-            --format=custom \
-            --no-owner \
-            --no-privileges \
-            -f supabase_backup.dump
+          # By using env variables, we don't need a long URI that can break
+          pg_dump --format=custom --no-owner --no-privileges -f supabase_backup.dump
 
       - name: Verify and Log Size
         run: |
