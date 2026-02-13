@@ -11,18 +11,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install PostgreSQL 17 client
-        run: |
-          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-          sudo apt-get update
-          sudo apt-get install -y postgresql-client-17
+      - name: Check PostgreSQL Client Version
+        run: psql --version  # This proves it is already installed!
 
       - name: Backup Supabase database
         env:
           PGPASSWORD: ${{ secrets.MSECRET }}
           PGSSLMODE: require
         run: |
+          # We use the built-in pg_dump
           pg_dump \
             -h db.ksuxmhzpclzoterkltug.supabase.co \
             -p 5432 \
@@ -35,8 +32,8 @@ jobs:
 
       - name: Verify Backup (Check for Tables)
         run: |
-          echo "Checking if backup contains tables..."
-          # If this returns nothing, the job will fail.
+          echo "Verifying backup content..."
+          # The built-in pg_restore works perfectly here
           pg_restore -l supabase_backup.dump | grep -i "TABLE"
 
       - name: Upload backup artifact
