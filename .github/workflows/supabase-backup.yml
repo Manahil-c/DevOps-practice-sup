@@ -13,7 +13,7 @@ jobs:
 
       - name: Backup Supabase database
         env:
-          DATABASE_URL: postgresql://postgres.ksuxmhzpclzoterkltug:${{ secrets.MSECRET }}@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres?pool_mode=session&sslmode=require
+          DATABASE_URL: postgresql://postgres.ksuxmhzpclzoterkltug:${{ secrets.MSECRET }}@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require
         run: |
           pg_dump "$DATABASE_URL" \
             --format=custom \
