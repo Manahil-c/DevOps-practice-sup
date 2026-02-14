@@ -1,23 +1,25 @@
 name: Supabase Backup
-on: 
+
+on:
   workflow_dispatch:
 
 jobs:
   backup:
     runs-on: ubuntu-latest
+
     steps:
       - name: Install PostgreSQL 17 client
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget gnupg2
+          sudo apt-get install -y wget gnupg
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
           wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-          echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
           sudo apt-get update
           sudo apt-get install -y postgresql-client-17
 
       - name: Backup Supabase database
         env:
-          DATABASE_URL: postgresql://postgres.ksuxmhzpclzoterkltug:${{ secrets.MSECRET }}@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require
+          DATABASE_URL: postgresql://postgres.ksuxmhzpclzoterkltug:${{ secrets.MSECRET }}@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true&pool_mode=session&sslmode=require
         run: |
           pg_dump "$DATABASE_URL" \
             --format=custom \
