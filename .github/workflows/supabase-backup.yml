@@ -13,27 +13,18 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y postgresql-client
 
-      - name: Backup Supabase database (Direct Connection)
+      - name: Backup Supabase database (Session Pooler Mode)
         env:
-          PGPASSWORD: ${{ secrets.MSECRET }}
-          PGHOST: db.ksuxmhzpclzoterkltug.supabase.co
-          PGPORT: 5432
-          PGUSER: postgres
-          PGDATABASE: postgres
-          PGSSLMODE: require
+          DATABASE_URL: postgresql://postgres.ksuxmhzpclzoterkltug:${{ secrets.MSECRET }}@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true&pool_mode=session&sslmode=require
         run: |
-          pg_dump \
-            --host=$PGHOST \
-            --port=$PGPORT \
-            --username=$PGUSER \
-            --dbname=$PGDATABASE \
+          pg_dump "$DATABASE_URL" \
             --format=custom \
             --no-owner \
             --no-privileges \
             --verbose \
             --file=supabase_backup.dump
 
-      - name: Upload backup
+      - name: Upload backup artifact
         uses: actions/upload-artifact@v4
         with:
           name: supabase-backup
