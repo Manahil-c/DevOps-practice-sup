@@ -1,21 +1,19 @@
 name: Supabase Backup
-
-on:
+on: 
   workflow_dispatch:
 
 jobs:
   backup:
     runs-on: ubuntu-latest
-
     steps:
       - name: Install PostgreSQL client
         run: |
           sudo apt-get update
           sudo apt-get install -y postgresql-client
 
-      - name: Backup Supabase database (Session Pooler Mode)
+      - name: Backup Supabase database
         env:
-          DATABASE_URL: postgresql://postgres.ksuxmhzpclzoterkltug:${{ secrets.MSECRET }}@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true&pool_mode=session&sslmode=require
+          DATABASE_URL: postgresql://postgres.ksuxmhzpclzoterkltug:${{ secrets.MSECRET }}@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres?pool_mode=session&sslmode=require
         run: |
           pg_dump "$DATABASE_URL" \
             --format=custom \
