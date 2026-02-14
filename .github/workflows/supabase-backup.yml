@@ -16,9 +16,9 @@ jobs:
       - name: Backup Supabase database (Direct Connection)
         env:
           PGPASSWORD: ${{ secrets.MSECRET }}
-          PGHOST: db.xxxxxxxxx.supabase.co   # <-- CHANGE THIS
-          PGPORT: 5432                       # <-- IMPORTANT
-          PGUSER: postgres.ksuxmhzpclzoterkltug
+          PGHOST: db.ksuxmhzpclzoterkltug.supabase.co
+          PGPORT: 5432
+          PGUSER: postgres
           PGDATABASE: postgres
           PGSSLMODE: require
         run: |
@@ -30,6 +30,7 @@ jobs:
             --format=custom \
             --no-owner \
             --no-privileges \
+            --verbose \
             --file=supabase_backup.dump
 
       - name: Upload backup
